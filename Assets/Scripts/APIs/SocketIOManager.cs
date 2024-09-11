@@ -275,13 +275,13 @@ public class SocketIOManager : MonoBehaviour
     internal void CloseSocket()
     {
         CloseSocketMesssage("EXIT");
-        DOVirtual.DelayedCall(0.1f, () =>
-        {
-            if (this.manager != null)
-            {
-                this.manager.Close();
-            }
-        });
+        //DOVirtual.DelayedCall(0.1f, () =>
+        //{
+        //    if (this.manager != null)
+        //    {
+        //        this.manager.Close();
+        //    }
+        //});
     }
 
     private void CloseSocketMesssage(string eventName)
@@ -347,6 +347,16 @@ public class SocketIOManager : MonoBehaviour
                     isResultdone = true;
                     break;
                 }
+            case "ExitUser":
+                {
+                    if (this.manager != null)
+                    {
+                        Debug.Log("Dispose my Socket");
+                        this.manager.Close();
+                    }
+                    Application.ExternalCall("window.parent.postMessage", "onExit", "*");
+                    break;
+                }
         }
     }
 
@@ -367,6 +377,7 @@ public class SocketIOManager : MonoBehaviour
         slotManager.SetInitialUI();
 
         isLoaded = true;
+        Application.ExternalCall("window.parent.postMessage", "OnEnter", "*");
     }
 
     //private void PopulateSlotSocket(List<string> slotPop, List<string> LineIds)

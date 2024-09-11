@@ -185,12 +185,19 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private SocketIOManager socketManager;
 
+    [SerializeField]
+    private Button m_AwakeGameButton;
+
     private bool isMusic = true;
     private bool isSound = true;
     private bool isExit = false;
 
     private int FreeSpins;
 
+    private void Awake()
+    {
+        SimulateClickByDefault();
+    }
 
     private void Start()
     {
@@ -229,10 +236,10 @@ public class UIManager : MonoBehaviour
         if (GameExit_Button) GameExit_Button.onClick.AddListener(delegate { OpenPopup(QuitPopup_Object); });
 
         if (NoQuit_Button) NoQuit_Button.onClick.RemoveAllListeners();
-        if (NoQuit_Button) NoQuit_Button.onClick.AddListener(delegate { ClosePopup(QuitPopup_Object); });
+        if (NoQuit_Button) NoQuit_Button.onClick.AddListener(delegate { if(!isExit) ClosePopup(QuitPopup_Object); });
 
         if (CrossQuit_Button) CrossQuit_Button.onClick.RemoveAllListeners();
-        if (CrossQuit_Button) CrossQuit_Button.onClick.AddListener(delegate { ClosePopup(QuitPopup_Object); });
+        if (CrossQuit_Button) CrossQuit_Button.onClick.AddListener(delegate { if(!isExit) ClosePopup(QuitPopup_Object); });
 
         if (CloseAD_Button) CloseAD_Button.onClick.RemoveAllListeners();
         if (CloseAD_Button) CloseAD_Button.onClick.AddListener(CallOnExitFunction);
@@ -262,6 +269,15 @@ public class UIManager : MonoBehaviour
 
     }
 
+    //HACK: Something To Do Here
+    private void SimulateClickByDefault()
+    {
+
+        Debug.Log("Awaken The Game...");
+        m_AwakeGameButton.onClick.AddListener(() => { Debug.Log("Called The Game..."); });
+        m_AwakeGameButton.onClick.Invoke();
+    }
+
     internal void LowBalPopup()
     {
         OpenPopup(LBPopup_Object);
@@ -272,11 +288,11 @@ public class UIManager : MonoBehaviour
         OpenPopup(ADPopup_Object);
     }
 
-    private void Awake()
-    {
-        if (Loading_Object) Loading_Object.SetActive(true);
-        StartCoroutine(LoadingRoutine());
-    }
+    //private void Awake()
+    //{
+    //    if (Loading_Object) Loading_Object.SetActive(true);
+    //    StartCoroutine(LoadingRoutine());
+    //}
 
     private IEnumerator LoadingRoutine()
     {
@@ -453,7 +469,7 @@ public class UIManager : MonoBehaviour
         isExit = true;
         audioController.PlayButtonAudio();
         slotManager.CallCloseSocket();
-        Application.ExternalCall("window.parent.postMessage", "onExit", "*");
+        //Application.ExternalCall("window.parent.postMessage", "onExit", "*");
     }
 
     private void OpenMenu()
